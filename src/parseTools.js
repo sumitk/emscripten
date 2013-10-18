@@ -1857,18 +1857,23 @@ function checkBitcast(item) {
   }
 }
 
+var tempFinalize = {
+  op: '?',
+  variant: '?',
+  type: '?',
+  params: []
+};
+
 function finalizeLLVMFunctionCall(item, noIndexizeFunctions) {
   if (item.intertype == 'getelementptr') { // TODO finalizeLLVMParameter on the ident and the indexes?
     return makePointer(makeGetSlabs(item.ident, item.type)[0], getGetElementPtrIndexes(item), null, item.type);
   }
   if (item.intertype == 'bitcast') checkBitcast(item);
-  var temp = {
-    op: item.intertype,
-    variant: item.variant,
-    type: item.type,
-    params: item.params.slice(0) // XXX slice?
-  };
-  return processMathop(temp);
+  tempFinalize.op = item.intertype;
+  tempFinalize.variant = item.variant;
+  tempFinalize.type = item.type;
+  tempFinalize.params = item.params;
+  return processMathop(tempFinalize);
 }
 
 function getGetElementPtrIndexes(item) {
